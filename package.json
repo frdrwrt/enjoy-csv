@@ -1,0 +1,47 @@
+{
+  "name": "enjoy-csv",
+  "version": "1.0.0",
+  "description": "enjoy csv transformation",
+  "main": "index.js",
+  "repository": "git@github.com:frdrwrt/enjoy-csv.git",
+  "author": "frdr <frdr@posteo.net>",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config ./jest.config.js",
+    "test:watch": "yarn test -- --watch",
+    "postinstall": "husky install",
+    "lint": "eslint --fix",
+    "format": "prettier --write \"src/**/*.js\""
+  },
+  "lint-staged": {
+    "**/*.js": [
+      "yarn test",
+      "yarn lint",
+      "yarn format",
+      "git add"
+    ]
+  },
+  "dependencies": {
+    "chalk": "^4.1.1",
+    "clear": "^0.1.0",
+    "fast-csv": "^4.3.6",
+    "figlet": "^1.5.0",
+    "tmp": "^0.2.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.14.3",
+    "@babel/eslint-parser": "^7.14.4",
+    "@babel/plugin-syntax-top-level-await": "^7.12.13",
+    "eslint": "^7.27.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.23.3",
+    "eslint-plugin-prettier": "^3.4.0",
+    "husky": "^6.0.0",
+    "jest": "^27.0.1",
+    "lint-staged": "^11.0.0",
+    "prettier": "^2.3.0"
+  }
+}
