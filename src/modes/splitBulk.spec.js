@@ -362,12 +362,48 @@ describe('splitBulk mode - unit is 0.5 Liter - number of units is between 1 and 
 });
 
 describe('splitBulk mode - unit other than kg and Liter', () => {
-  test('should use "Packung" if this is the origin', () => {
-    expect(splitBulk({ Bestellnummer: 1, Kondition_auf: 'Packung' })).toEqual({
-      Bestellnummer: 1,
-      Einheit: 'Packung',
+  {
+    test('should use "Packung" if this is the origin', () => {
+      expect(
+        splitBulk({
+          Bestellnummer: 1,
+          Kondition_auf: 'Packung',
+          Nettofüllmenge_od_Mengenangabe_2: '1.000 Packung',
+        })
+      ).toEqual({
+        Bestellnummer: 1,
+        Einheit: 'Packung',
+        Gebindegröße: 1,
+      });
     });
-  });
+
+    test('should use "Packung" if this is the origin', () => {
+      expect(
+        splitBulk({
+          Bestellnummer: 1,
+          Kondition_auf: 'Packung',
+          Nettofüllmenge_od_Mengenangabe_2: '15.000 Packung',
+        })
+      ).toEqual({
+        Bestellnummer: 1,
+        Einheit: 'Packung',
+        Gebindegröße: 15,
+      });
+    });
+
+    test('should throw if "Packung" is not a whole number', () => {
+      expect(
+        splitBulk({
+          Bestellnummer: 1,
+          Kondition_auf: 'Packung',
+          Nettofüllmenge_od_Mengenangabe_2: '15.300 Packung',
+        })
+      ).toContain('Error: "Packung" needs to be a whole-number');
+    });
+  }
+
+  /*
+  the following cases are not ready to be tested yet
 
   test('should use "Beutel" if this is the origin', () => {
     expect(splitBulk({ Bestellnummer: 1, Kondition_auf: 'Beutel' })).toEqual({
@@ -438,4 +474,5 @@ describe('splitBulk mode - unit other than kg and Liter', () => {
       Einheit: 'Karton',
     });
   });
+  */
 });
