@@ -1,6 +1,6 @@
 import { createReadStream, createWriteStream } from 'fs';
 import { parseFile, format } from 'fast-csv';
-import { pipeline } from './utils.js';
+import utils from './utils.js';
 
 export async function sniffCsvDelimiter(file) {
   const readstream = createReadStream(file, { encoding: 'utf-8' });
@@ -29,12 +29,14 @@ export async function processCsv(
   transformation
 ) {
   const delimiter = await sniffCsvDelimiter(inputFilePath);
+  let idx = 1;
 
-  await pipeline(
+  await utils.pipeline(
     parseFile(inputFilePath, { headers: true, delimiter }),
     async function* applyTransformation(asyncIterable) {
       for await (const row of asyncIterable) {
-        yield transformation(row);
+        idx += 1;
+        yield transformation(row, idx);
       }
     },
     format({ headers: true, delimiter }),
@@ -49,7 +51,7 @@ export async function processCsv(
 export async function readCsv(filePath) {
   const data = [];
   const delimiter = await sniffCsvDelimiter(filePath);
-  await pipeline(
+  await utils.pipeline(
     parseFile(filePath, { headers: true, delimiter }),
     async function* collectRows(asyncIterable) {
       for await (const row of asyncIterable) {
