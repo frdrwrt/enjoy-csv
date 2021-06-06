@@ -1,3 +1,8 @@
 export default function category({ Artikelnr, Produktgruppe, Untergruppe }) {
-  return undefined;
+  return {
+    Bestellnummer: Artikelnr,
+    Kategorie: Untergruppe?.trim()
+      ? Untergruppe?.trim()
+      : Produktgruppe?.trim(),
+  };
 }
