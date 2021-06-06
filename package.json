@@ -19,8 +19,7 @@
     "**/*.js": [
       "yarn test --passWithNoTests",
       "yarn lint",
-      "yarn format",
-      "git add"
+      "yarn format"
     ]
   },
   "dependencies": {
