@@ -17,7 +17,6 @@
   },
   "lint-staged": {
     "**/*.js": [
-      "yarn test --passWithNoTests",
       "yarn lint",
       "yarn format"
     ]
