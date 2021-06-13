@@ -26,7 +26,8 @@ Trying to read it with ; as delimiter.`);
 
 export async function processCsv(
   { inputFilePath, outputFilePath },
-  transformation
+  transformation,
+  { outputHeaders = true } = {}
 ) {
   const delimiter = await sniffCsvDelimiter(inputFilePath);
   let idx = 1;
@@ -36,10 +37,14 @@ export async function processCsv(
     async function* applyTransformation(asyncIterable) {
       for await (const row of asyncIterable) {
         idx += 1;
-        yield transformation(row, idx);
+        try {
+          yield transformation(row);
+        } catch (error) {
+          utils.skipRow(idx, error);
+        }
       }
     },
-    format({ headers: true, delimiter }),
+    format({ headers: outputHeaders, delimiter }),
     createWriteStream(outputFilePath)
   );
 }
