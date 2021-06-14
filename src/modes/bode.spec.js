@@ -134,7 +134,7 @@ describe('origin and producer', () => {
   });
 });
 
-describe.skip('price', () => {
+describe('price', () => {
   describe('unit is kg', () => {
     test('should calculate the price for 25*1kg rice correctly', () => {
       expect(
@@ -196,15 +196,15 @@ describe.skip('price', () => {
     });
   });
 
-  describe('unit is L', () => {
+  describe.skip('unit is L', () => {
     test('should calculate the price for 12*1L soja drink correctly', () => {
-      expect(
-        bode({
-          ...fakeData,
-          Listenpreis: 1.39,
-          Nettofüllmenge_od_Mengenangabe_2: '12.000 Liter',
-        })
-      ).toMatchObject({ Nettopreis: 1.36 });
+      const res = bode({
+        ...fakeData,
+        Listenpreis: 1.39,
+        Nettofüllmenge_od_Mengenangabe_2: '12.000 Liter',
+      });
+      console.log(res);
+      expect(res).toMatchObject({ Nettopreis: 1.36 });
     });
 
     test('should calculate the price for 10*0.5L whatever correctly', () => {
@@ -214,12 +214,12 @@ describe.skip('price', () => {
           Listenpreis: 5.0,
           Nettofüllmenge_od_Mengenangabe_2: '5.000 Liter',
         })
-      ).toMatchObject({ Nettopreis: 2.5 });
+      ).toMatchObject({ Nettopreis: 2.45 });
     });
   });
 
-  describe('unit is other than kg or L', () => {
-    test.only('should calculate the price for 6 packs á 500g rice correctly', () => {
+  describe.skip('unit is other than kg or L', () => {
+    test('should calculate the price for 6 packs á 500g rice correctly', () => {
       expect(
         bode({
           ...fakeData,
@@ -856,8 +856,8 @@ describe('splitBulk', () => {
     });
   });
 
-  describe('unit other than kg and Liter', () => {
-    test('should use "Packung" if this is the origin', () => {
+  describe.skip('unit other than kg and Liter', () => {
+    test('should use a 1 as bulk size if unit is "1.000 Packung"', () => {
       expect(
         bode({
           ...fakeData,
@@ -870,7 +870,7 @@ describe('splitBulk', () => {
       });
     });
 
-    test('should use "Packung" if this is the origin', () => {
+    test('should use 15 as bulk size if unit is "15.000 Packung"', () => {
       expect(
         bode({
           ...fakeData,
@@ -892,83 +892,239 @@ describe('splitBulk', () => {
         })
       ).toThrowError('Packung needs to be a whole-number');
     });
+
+    test('should use a whole-number bulk size if unit is "Beutel"', () => {
+      expect(
+        bode({
+          ...fakeData,
+          Kondition_auf: 'Beutel',
+          Nettofüllmenge_od_Mengenangabe_2: '5.000 Beutel',
+        })
+      ).toMatchObject({ Einheit: 'Beutel', Gebindegröße: 5 });
+    });
+
+    test('should throw if "Beutel" is not a whole number', () => {
+      expect(() =>
+        bode({
+          ...fakeData,
+          Kondition_auf: 'Beutel',
+          Nettofüllmenge_od_Mengenangabe_2: '6.300 Beutel',
+        })
+      ).toThrowError('Beutel needs to be a whole number.');
+    });
+
+    test('should use a whole-number bulk size if unit is "Glas"', () => {
+      expect(
+        bode({
+          ...fakeData,
+          Kondition_auf: 'Glas',
+          Nettofüllmenge_od_Mengenangabe_2: '6.000 Glas',
+        })
+      ).toMatchObject({ Einheit: 'Glas', Gebindegröße: 6 });
+    });
+
+    test('should throw if "Glas" is not a whole number', () => {
+      expect(() =>
+        bode({
+          ...fakeData,
+          Kondition_auf: 'Glas',
+          Nettofüllmenge_od_Mengenangabe_2: '6.050 Glas',
+        })
+      ).toThrowError('Glas needs to be a whole number.');
+    });
+
+    test('should use a whole-number bulk size if unit is "Stück"', () => {
+      expect(
+        bode({
+          ...fakeData,
+          Kondition_auf: 'Stück',
+          Nettofüllmenge_od_Mengenangabe_2: '6.000 Stück',
+        })
+      ).toMatchObject({ Einheit: 'Stück', Gebindegröße: 6 });
+    });
+
+    test('should throw if "Stück" is not a whole number', () => {
+      expect(() =>
+        bode({
+          ...fakeData,
+          Kondition_auf: 'Stück',
+          Nettofüllmenge_od_Mengenangabe_2: '6.009 Stück',
+        })
+      ).toThrowError('Stück needs to be a whole number.');
+    });
+
+    test('should use a whole-number bulk size if unit is "Flasche"', () => {
+      expect(
+        bode({
+          ...fakeData,
+          Kondition_auf: 'Flasche',
+          Nettofüllmenge_od_Mengenangabe_2: '6.000 Flasche',
+        })
+      ).toMatchObject({ Einheit: 'Flasche', Gebindegröße: 6 });
+    });
+
+    test('should throw if "Flasche" is not a whole number', () => {
+      expect(() =>
+        bode({
+          ...fakeData,
+          Kondition_auf: 'Flasche',
+          Nettofüllmenge_od_Mengenangabe_2: '6.009 Flasche',
+        })
+      ).toThrowError('Flasche needs to be a whole number.');
+    });
+
+    test('should use a whole-number bulk size if unit is "Becher"', () => {
+      expect(
+        bode({
+          ...fakeData,
+          Kondition_auf: 'Becher',
+          Nettofüllmenge_od_Mengenangabe_2: '6.000 Becher',
+        })
+      ).toMatchObject({ Einheit: 'Becher', Gebindegröße: 6 });
+    });
+
+    test('should throw if "Becher" is not a whole number', () => {
+      expect(() =>
+        bode({
+          ...fakeData,
+          Kondition_auf: 'Becher',
+          Nettofüllmenge_od_Mengenangabe_2: '6.009 Becher',
+        })
+      ).toThrowError('Becher needs to be a whole number.');
+    });
+
+    test('should use a whole-number bulk size if unit is "Dose"', () => {
+      expect(
+        bode({
+          ...fakeData,
+          Kondition_auf: 'Dose',
+          Nettofüllmenge_od_Mengenangabe_2: '6.000 Dose',
+        })
+      ).toMatchObject({ Einheit: 'Dose', Gebindegröße: 6 });
+    });
+
+    test('should throw if "Dose" is not a whole number', () => {
+      expect(() =>
+        bode({
+          ...fakeData,
+          Kondition_auf: 'Dose',
+          Nettofüllmenge_od_Mengenangabe_2: '6.009 Dose',
+        })
+      ).toThrowError('Dose needs to be a whole number.');
+    });
+
+    test('should use a whole-number bulk size if unit is "Kanister"', () => {
+      expect(
+        bode({
+          ...fakeData,
+          Kondition_auf: 'Kanister',
+          Nettofüllmenge_od_Mengenangabe_2: '6.000 Kanister',
+        })
+      ).toMatchObject({ Einheit: 'Kanister', Gebindegröße: 6 });
+    });
+
+    test('should throw if "Kanister" is not a whole number', () => {
+      expect(() =>
+        bode({
+          ...fakeData,
+          Kondition_auf: 'Kanister',
+          Nettofüllmenge_od_Mengenangabe_2: '6.009 Kanister',
+        })
+      ).toThrowError('Kanister needs to be a whole number.');
+    });
+
+    test('should use a whole-number bulk size if unit is "Riegel"', () => {
+      expect(
+        bode({
+          ...fakeData,
+          Kondition_auf: 'Riegel',
+          Nettofüllmenge_od_Mengenangabe_2: '6.000 Riegel',
+        })
+      ).toMatchObject({ Einheit: 'Riegel', Gebindegröße: 6 });
+    });
+
+    test('should throw if "Riegel" is not a whole number', () => {
+      expect(() =>
+        bode({
+          ...fakeData,
+          Kondition_auf: 'Riegel',
+          Nettofüllmenge_od_Mengenangabe_2: '6.009 Riegel',
+        })
+      ).toThrowError('Riegel needs to be a whole number.');
+    });
+
+    test('should use a whole-number bulk size if unit is "Tafel"', () => {
+      expect(
+        bode({
+          ...fakeData,
+          Kondition_auf: 'Tafel',
+          Nettofüllmenge_od_Mengenangabe_2: '6.000 Tafel',
+        })
+      ).toMatchObject({ Einheit: 'Tafel', Gebindegröße: 6 });
+    });
+
+    test('should throw if "Tafel" is not a whole number', () => {
+      expect(() =>
+        bode({
+          ...fakeData,
+          Kondition_auf: 'Tafel',
+          Nettofüllmenge_od_Mengenangabe_2: '6.009 Tafel',
+        })
+      ).toThrowError('Tafel needs to be a whole number.');
+    });
+
+    test('should use a whole-number bulk size if unit is "EloPak"', () => {
+      expect(
+        bode({
+          ...fakeData,
+          Kondition_auf: 'EloPak',
+          Nettofüllmenge_od_Mengenangabe_2: '6.000 EloPak',
+        })
+      ).toMatchObject({ Einheit: 'EloPak', Gebindegröße: 6 });
+    });
+
+    test('should throw if "EloPak" is not a whole number', () => {
+      expect(() =>
+        bode({
+          ...fakeData,
+          Kondition_auf: 'EloPak',
+          Nettofüllmenge_od_Mengenangabe_2: '6.009 EloPak',
+        })
+      ).toThrowError('EloPak needs to be a whole number.');
+    });
   });
 
-  /*
-    the following cases are not ready to be tested yet
-  
-    test('should use "Beutel" if this is the origin', () => {
-      expect(bode({ Bestellnummer: 1, Kondition_auf: 'Beutel' })).toMatchObject({
-        Bestellnummer: 1,
-        Einheit: 'Beutel',
-      });
-    });
-  
-    test('should use "Glas" if this is the origin and trim', () => {
-      expect(bode({ Bestellnummer: 1, Kondition_auf: 'Glas  ' })).toMatchObject({
-        Bestellnummer: 1,
-        Einheit: 'Glas',
-      });
-    });
-  
-    test('should use "Stück" if this is the origin and trim', () => {
-      expect(bode({ Bestellnummer: 1, Kondition_auf: '   Stück ' })).toMatchObject({
-        Bestellnummer: 1,
-        Einheit: 'Stück',
-      });
-    });
-  
-    test('should use "Eimer" if this is the origin and trim', () => {
-      expect(bode({ Bestellnummer: 1, Kondition_auf: 'Eimer' })).toMatchObject({
-        Bestellnummer: 1,
-        Einheit: 'Eimer',
-      });
-    });
-  
-    test('should use "Flasche" if this is the origin', () => {
-      expect(bode({ Bestellnummer: 1, Kondition_auf: 'Flasche' })).toMatchObject({
-        Bestellnummer: 1,
-        Einheit: 'Flasche',
-      });
-    });
-  
-    test('should use "Dose" if this is the origin', () => {
-      expect(bode({ Bestellnummer: 1, Kondition_auf: 'Dose' })).toMatchObject({
-        Bestellnummer: 1,
-        Einheit: 'Dose',
-      });
-    });
-  
-    test('should use "Kanister" if this is the origin', () => {
-      expect(bode({ Bestellnummer: 1, Kondition_auf: 'Kanister' })).toMatchObject({
-        Bestellnummer: 1,
-        Einheit: 'Kanister',
-      });
-    });
-  
-    test('should use "Riegel" if this is the origin', () => {
-      expect(bode({ Bestellnummer: 1, Kondition_auf: 'Riegel' })).toMatchObject({
-        Bestellnummer: 1,
-        Einheit: 'Riegel',
-      });
-    });
-  
-    test('should use "Tafel" if this is the origin', () => {
-      expect(bode({ Bestellnummer: 1, Kondition_auf: 'Tafel' })).toMatchObject({
-        Bestellnummer: 1,
-        Einheit: 'Tafel',
-      });
-    });
-  
-    test('should use "Karton" if this is the origin', () => {
-      expect(bode({ Bestellnummer: 1, Kondition_auf: 'Karton' })).toMatchObject({
-        Bestellnummer: 1,
-        Einheit: 'Karton',
-      });
-    });
-    */
+  describe.skip('unit is "Karton"', () => {
+    test('should use a whole-number bulk size if unit is "Karton"', () => {
+      expect(
+        bode({
+          ...fakeData,
+          Kondition_auf: 'Karton',
+          Nettofüllmenge_od_Mengenangabe_2: '1.925 Karton',
+          Nettofüllmenge_oder_Mengenangabe: '1.000 Karton',
+        })
+      ).toMatchObject({ Einheit: 'Karton', Gebindegröße: 1 });
 
-  // });
+      expect(
+        bode({
+          ...fakeData,
+          Kondition_auf: 'Karton',
+          Nettofüllmenge_od_Mengenangabe_2: '2.575 Karton',
+          Nettofüllmenge_oder_Mengenangabe: '1.000 Karton',
+        })
+      ).toMatchObject({ Einheit: 'Karton', Gebindegröße: 1 });
+    });
+
+    test('should throw if "Karton" is not a whole number', () => {
+      expect(() =>
+        bode({
+          ...fakeData,
+          Kondition_auf: 'Karton',
+          Nettofüllmenge_oder_Mengenangabe: '6.009 Karton',
+        })
+      ).toThrowError('Karton needs to be a whole number.');
+    });
+  });
 
   test('should throw if Kondition_auf is not known', () => {
     expect(() =>
