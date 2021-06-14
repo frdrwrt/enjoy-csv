@@ -1,4 +1,4 @@
-export const foodcoopHeaders = [
+export const foodsoftHeaders = [
   'Status',
   'Bestellnummer',
   'Name',

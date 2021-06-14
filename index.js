@@ -6,7 +6,7 @@ import {
   somethingWentWrong,
 } from './src/libs/cli.js';
 import { processCsv } from './src/libs/csv.js';
-import { foodcoopHeaders } from './src/libs/foodcoop.js';
+import { foodsoftHeaders } from './src/libs/foodsoft.js';
 import bode from './src/modes/bode.js';
 import demo from './src/modes/demo.js';
 
@@ -20,7 +20,7 @@ async function enjoy(args) {
       await processCsv(args, demo);
       break;
     case 'bode':
-      await processCsv(args, bode, { outputHeaders: foodcoopHeaders });
+      await processCsv(args, bode, { outputHeaders: foodsoftHeaders });
       break;
     default:
       somethingWentWrong(`
