@@ -119,6 +119,25 @@ function rename({
   uniqueNames.push(name);
   return name;
 }
+
+export function checkPriceCalculation(
+  { Artikelnr, Listen_VK_Preis, discount = DISCOUNT },
+  { Bestellnummer, Nettopreis, Gebindegröße }
+) {
+  const priceForBulkInFoodsoft = Nettopreis * Gebindegröße;
+  const priceForBulkInOriginalData = Listen_VK_Preis * (1 - discount);
+  if (Artikelnr === Bestellnummer) {
+    if (priceForBulkInFoodsoft !== priceForBulkInOriginalData) {
+      throw new Error(`Price calculation fails for article ${Artikelnr}`);
+    }
+  } else {
+    throw new Error(
+      'The price calculation check needs to be on the same product!'
+    );
+  }
+  return true;
+}
+
 export function resetNameMemory() {
   return uniqueNames.splice(0, uniqueNames.length);
 }
@@ -135,12 +154,17 @@ export default function bode({
   Nettofüllmenge_od_Mengenangabe_2,
   Ursprünge,
   Listenpreis,
+  Listen_VK_Preis,
 }) {
   const { Einheit, Gebindegröße, Nettopreis } = splitBulk({
     Kondition_auf,
     Nettofüllmenge_od_Mengenangabe_2,
     Listenpreis,
   });
+  checkPriceCalculation(
+    { Artikelnr, Listen_VK_Preis, DISCOUNT },
+    { Artikelnr, Nettopreis, Gebindegröße }
+  );
   return {
     Bestellnummer: Artikelnr,
     Name: rename({

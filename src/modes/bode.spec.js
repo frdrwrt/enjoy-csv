@@ -17,6 +17,7 @@ const fakeData = {
   Nettofüllmenge_od_Mengenangabe_2: '25kg',
   Ursprünge: 'Deutschland',
   Listenpreis: 1.85,
+  Listen_VK_Preis: 11.1,
 };
 
 describe('bode naturkost', () => {
@@ -32,6 +33,12 @@ describe('bode naturkost', () => {
       Gebindegröße: 25,
       Kategorie: 'Aufstriche würzig',
     });
+  });
+
+  test('should throw if price double check fails', () => {
+    expect(bode({ ...fakeData, Listen_VK_Preis: 10.0 })).toThrowError(
+      'Price calculation fails for article 1'
+    );
   });
 });
 
