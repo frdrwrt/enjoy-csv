@@ -99,6 +99,7 @@ describe('name', () => {
     expect(
       bode({
         ...fakeData,
+        Artikelnr: 1,
         Artikelname: 'Langkornreis Vollkorn bio',
         Kolli_Artikel: 'Ja',
         Nettofüllmenge_od_Mengenangabe_2: '25.000 kg',
@@ -120,11 +121,33 @@ describe('name', () => {
     });
   });
 
-  test('should throw if name is not unique', () => {
-    bode({ ...fakeData, Artikelname: 'Langkornreis' });
+  test('should throw if article number and name are not unique', () => {
+    bode({ ...fakeData, Artikelnr: 1, Artikelname: 'Langkornreis' });
     expect(() =>
-      bode({ ...fakeData, Artikelname: 'Langkornreis' })
-    ).toThrowError('Name (Langkornreis) is not unique');
+      bode({ ...fakeData, Artikelnr: 1, Artikelname: 'Langkornreis' })
+    ).toThrowError('Article 1 called Langkornreis is not unique.');
+  });
+
+  test('should throw if article number already exists but name is unique', () => {
+    bode({ ...fakeData, Artikelnr: 1, Artikelname: 'Langkornreis' });
+    expect(() =>
+      bode({
+        ...fakeData,
+        Artikelnr: 1,
+        Artikelname: 'Langkornreis konventionell',
+      })
+    ).toThrowError(
+      'Article 1 already exists but with two different names: Langkornreis, Langkornreis konventionell'
+    );
+  });
+
+  test('should throw if article number is unique but the name is already in use', () => {
+    bode({ ...fakeData, Artikelnr: 1, Artikelname: 'Langkornreis' });
+    expect(() =>
+      bode({ ...fakeData, Artikelnr: 2, Artikelname: 'Langkornreis' })
+    ).toThrowError(
+      'The name Langkornreis is the same for article number 1 and 2.'
+    );
   });
 });
 

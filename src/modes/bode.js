@@ -122,8 +122,9 @@ function tax(Mwst) {
   throw new Error(`Tax could not be determined (${mwst})`);
 }
 
-const uniqueNames = [];
+let uniqueNrName = {};
 function rename({
+  Artikelnr,
   Artikelname,
   Kolli_Artikel,
   Nettofüllmenge_od_Mengenangabe_2,
@@ -136,10 +137,30 @@ function rename({
     name = Artikelname.substring(0, 60);
   }
 
-  if (uniqueNames.includes(name)) {
-    throw new Error(`Name (${name}) is not unique`);
+  if (
+    Object.keys(uniqueNrName).includes(Artikelnr.toString()) &&
+    uniqueNrName[Artikelnr] === name
+  ) {
+    throw new Error(`Article ${Artikelnr} called ${name} is not unique.`);
+  } else if (
+    Object.keys(uniqueNrName).includes(Artikelnr.toString()) &&
+    uniqueNrName[Artikelnr] !== name
+  ) {
+    throw new Error(
+      `Article ${Artikelnr} already exists but with two different names: ${uniqueNrName[Artikelnr]}, ${name}`
+    );
+  } else if (
+    Object.values(uniqueNrName).includes(name) &&
+    !Object.keys(uniqueNrName).includes(Artikelnr.toString())
+  ) {
+    const articleNrForExistingName = Object.keys(uniqueNrName).find(
+      (key) => uniqueNrName[key] === name
+    );
+    throw new Error(
+      `The name ${name} is the same for article number ${articleNrForExistingName} and ${Artikelnr}.`
+    );
   }
-  uniqueNames.push(name);
+  uniqueNrName[Artikelnr] = name;
   return name;
 }
 
@@ -162,7 +183,7 @@ function checkPriceCalculation(
 }
 
 export function resetNameMemory() {
-  return uniqueNames.splice(0, uniqueNames.length);
+  uniqueNrName = {};
 }
 
 export default function bode(
@@ -206,6 +227,7 @@ export default function bode(
   return {
     Bestellnummer: Artikelnr,
     Name: rename({
+      Artikelnr,
       Artikelname,
       Kolli_Artikel,
       Nettofüllmenge_od_Mengenangabe_2,
