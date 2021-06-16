@@ -1,11 +1,12 @@
 const DISCOUNT = 0.02;
 
 function splitBulk({
-  Kondition_auf: unit,
+  Kondition_auf,
   Nettofüllmenge_oder_Mengenangabe,
   Nettofüllmenge_od_Mengenangabe_2,
   Listenpreis,
 }) {
+  const unit = Kondition_auf === 'Eimer' ? 'kg' : Kondition_auf;
   const netto = parseFloat(
     unit === 'Karton'
       ? Nettofüllmenge_oder_Mengenangabe

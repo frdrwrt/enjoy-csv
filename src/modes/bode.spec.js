@@ -1132,6 +1132,18 @@ describe('splitBulk', () => {
     });
   });
 
+  describe('unit is Eimer', () => {
+    test('"Eimer" should be separated in kg and treated as unit "kg"', () => {
+      expect(
+        bode({
+          ...fakeData,
+          Kondition_auf: 'Eimer',
+          Nettofüllmenge_od_Mengenangabe_2: '10.000 kg',
+        })
+      ).toMatchObject({ Einheit: '0,5 kg', Gebindegröße: 20 });
+    });
+  });
+
   test('should throw if Kondition_auf is not known', () => {
     expect(() =>
       bode({
