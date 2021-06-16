@@ -13,8 +13,8 @@ const fakeData = {
   Produktgruppe: 'Aufstriche',
   Untergruppe: 'Aufstriche würzig',
   Kolli_Artikel: 'Nein',
-  Kondition_auf: 'kg',
-  Nettofüllmenge_od_Mengenangabe_2: '25kg',
+  Kondition_auf: 'Glas',
+  Nettofüllmenge_od_Mengenangabe_2: '6.000 Glas',
   Ursprünge: 'Deutschland',
   Listenpreis: 1.85,
   Listen_VK_Preis: 11.1,
@@ -22,22 +22,24 @@ const fakeData = {
 
 describe('bode naturkost', () => {
   test('should extract information from bode to format as expected by foodsoft', () => {
-    expect(bode(fakeData)).toMatchObject({
+    expect(bode(fakeData, { doublePriceCheck: true })).toMatchObject({
       Bestellnummer: 1,
       Name: 'Sendi Aufstrich',
       Produzent: 'Zwergenwiese',
       Herkunft: 'Deutschland',
-      Einheit: '1 kg',
+      Einheit: '1 Glas',
       Nettopreis: 1.81,
       Mwst: '7.00%',
-      Gebindegröße: 25,
+      Gebindegröße: 6,
       Kategorie: 'Aufstriche würzig',
     });
   });
 
   test('should throw if price double check fails', () => {
-    expect(bode({ ...fakeData, Listen_VK_Preis: 10.0 })).toThrowError(
-      'Price calculation fails for article 1'
+    expect(() =>
+      bode({ ...fakeData, Listen_VK_Preis: 10.0 }, { doublePriceCheck: true })
+    ).toThrowError(
+      'Price calculation fails for article 1. Price summarized in foodsoft is 10.88. Original, but discounted sell price is 9.8.'
     );
   });
 });
@@ -167,6 +169,7 @@ describe('price', () => {
         bode({
           ...fakeData,
           Listenpreis: 5.52,
+          Kondition_auf: 'kg',
           Nettofüllmenge_od_Mengenangabe_2: '12.500 kg',
         })
       ).toMatchObject({ Nettopreis: 2.7 });
@@ -177,6 +180,7 @@ describe('price', () => {
         bode({
           ...fakeData,
           Listenpreis: 4.99,
+          Kondition_auf: 'kg',
           Nettofüllmenge_od_Mengenangabe_2: '3.000 kg',
         })
       ).toMatchObject({ Nettopreis: 1.22 });
@@ -187,6 +191,7 @@ describe('price', () => {
         bode({
           ...fakeData,
           Listenpreis: 8.99,
+          Kondition_auf: 'kg',
           Nettofüllmenge_od_Mengenangabe_2: '2.500 kg',
         })
       ).toMatchObject({ Nettopreis: 0.88 });
@@ -197,6 +202,7 @@ describe('price', () => {
         bode({
           ...fakeData,
           Listenpreis: 14.45,
+          Kondition_auf: 'kg',
           Nettofüllmenge_od_Mengenangabe_2: '1.000 kg',
         })
       ).toMatchObject({ Nettopreis: 0.71 });
@@ -225,7 +231,7 @@ describe('price', () => {
     });
   });
 
-  describe.skip('unit is other than kg or L', () => {
+  describe('unit is other than kg or L', () => {
     test('should calculate the price for 6 packs á 500g rice correctly', () => {
       expect(
         bode({
@@ -863,7 +869,7 @@ describe('splitBulk', () => {
     });
   });
 
-  describe.skip('unit other than kg and Liter', () => {
+  describe('unit other than kg and Liter', () => {
     test('should use a 1 as bulk size if unit is "1.000 Packung"', () => {
       expect(
         bode({
@@ -872,7 +878,7 @@ describe('splitBulk', () => {
           Nettofüllmenge_od_Mengenangabe_2: '1.000 Packung',
         })
       ).toMatchObject({
-        Einheit: 'Packung',
+        Einheit: '1 Packung',
         Gebindegröße: 1,
       });
     });
@@ -885,7 +891,7 @@ describe('splitBulk', () => {
           Nettofüllmenge_od_Mengenangabe_2: '15.000 Packung',
         })
       ).toMatchObject({
-        Einheit: 'Packung',
+        Einheit: '1 Packung',
         Gebindegröße: 15,
       });
     });
@@ -907,7 +913,7 @@ describe('splitBulk', () => {
           Kondition_auf: 'Beutel',
           Nettofüllmenge_od_Mengenangabe_2: '5.000 Beutel',
         })
-      ).toMatchObject({ Einheit: 'Beutel', Gebindegröße: 5 });
+      ).toMatchObject({ Einheit: '1 Beutel', Gebindegröße: 5 });
     });
 
     test('should throw if "Beutel" is not a whole number', () => {
@@ -917,7 +923,7 @@ describe('splitBulk', () => {
           Kondition_auf: 'Beutel',
           Nettofüllmenge_od_Mengenangabe_2: '6.300 Beutel',
         })
-      ).toThrowError('Beutel needs to be a whole number.');
+      ).toThrowError('Beutel needs to be a whole-number');
     });
 
     test('should use a whole-number bulk size if unit is "Glas"', () => {
@@ -927,7 +933,7 @@ describe('splitBulk', () => {
           Kondition_auf: 'Glas',
           Nettofüllmenge_od_Mengenangabe_2: '6.000 Glas',
         })
-      ).toMatchObject({ Einheit: 'Glas', Gebindegröße: 6 });
+      ).toMatchObject({ Einheit: '1 Glas', Gebindegröße: 6 });
     });
 
     test('should throw if "Glas" is not a whole number', () => {
@@ -937,7 +943,7 @@ describe('splitBulk', () => {
           Kondition_auf: 'Glas',
           Nettofüllmenge_od_Mengenangabe_2: '6.050 Glas',
         })
-      ).toThrowError('Glas needs to be a whole number.');
+      ).toThrowError('Glas needs to be a whole-number');
     });
 
     test('should use a whole-number bulk size if unit is "Stück"', () => {
@@ -947,7 +953,7 @@ describe('splitBulk', () => {
           Kondition_auf: 'Stück',
           Nettofüllmenge_od_Mengenangabe_2: '6.000 Stück',
         })
-      ).toMatchObject({ Einheit: 'Stück', Gebindegröße: 6 });
+      ).toMatchObject({ Einheit: '1 Stück', Gebindegröße: 6 });
     });
 
     test('should throw if "Stück" is not a whole number', () => {
@@ -957,7 +963,7 @@ describe('splitBulk', () => {
           Kondition_auf: 'Stück',
           Nettofüllmenge_od_Mengenangabe_2: '6.009 Stück',
         })
-      ).toThrowError('Stück needs to be a whole number.');
+      ).toThrowError('Stück needs to be a whole-number');
     });
 
     test('should use a whole-number bulk size if unit is "Flasche"', () => {
@@ -967,7 +973,7 @@ describe('splitBulk', () => {
           Kondition_auf: 'Flasche',
           Nettofüllmenge_od_Mengenangabe_2: '6.000 Flasche',
         })
-      ).toMatchObject({ Einheit: 'Flasche', Gebindegröße: 6 });
+      ).toMatchObject({ Einheit: '1 Flasche', Gebindegröße: 6 });
     });
 
     test('should throw if "Flasche" is not a whole number', () => {
@@ -977,7 +983,7 @@ describe('splitBulk', () => {
           Kondition_auf: 'Flasche',
           Nettofüllmenge_od_Mengenangabe_2: '6.009 Flasche',
         })
-      ).toThrowError('Flasche needs to be a whole number.');
+      ).toThrowError('Flasche needs to be a whole-number');
     });
 
     test('should use a whole-number bulk size if unit is "Becher"', () => {
@@ -987,7 +993,7 @@ describe('splitBulk', () => {
           Kondition_auf: 'Becher',
           Nettofüllmenge_od_Mengenangabe_2: '6.000 Becher',
         })
-      ).toMatchObject({ Einheit: 'Becher', Gebindegröße: 6 });
+      ).toMatchObject({ Einheit: '1 Becher', Gebindegröße: 6 });
     });
 
     test('should throw if "Becher" is not a whole number', () => {
@@ -997,7 +1003,7 @@ describe('splitBulk', () => {
           Kondition_auf: 'Becher',
           Nettofüllmenge_od_Mengenangabe_2: '6.009 Becher',
         })
-      ).toThrowError('Becher needs to be a whole number.');
+      ).toThrowError('Becher needs to be a whole-number');
     });
 
     test('should use a whole-number bulk size if unit is "Dose"', () => {
@@ -1007,7 +1013,7 @@ describe('splitBulk', () => {
           Kondition_auf: 'Dose',
           Nettofüllmenge_od_Mengenangabe_2: '6.000 Dose',
         })
-      ).toMatchObject({ Einheit: 'Dose', Gebindegröße: 6 });
+      ).toMatchObject({ Einheit: '1 Dose', Gebindegröße: 6 });
     });
 
     test('should throw if "Dose" is not a whole number', () => {
@@ -1017,7 +1023,7 @@ describe('splitBulk', () => {
           Kondition_auf: 'Dose',
           Nettofüllmenge_od_Mengenangabe_2: '6.009 Dose',
         })
-      ).toThrowError('Dose needs to be a whole number.');
+      ).toThrowError('Dose needs to be a whole-number');
     });
 
     test('should use a whole-number bulk size if unit is "Kanister"', () => {
@@ -1027,7 +1033,7 @@ describe('splitBulk', () => {
           Kondition_auf: 'Kanister',
           Nettofüllmenge_od_Mengenangabe_2: '6.000 Kanister',
         })
-      ).toMatchObject({ Einheit: 'Kanister', Gebindegröße: 6 });
+      ).toMatchObject({ Einheit: '1 Kanister', Gebindegröße: 6 });
     });
 
     test('should throw if "Kanister" is not a whole number', () => {
@@ -1037,7 +1043,7 @@ describe('splitBulk', () => {
           Kondition_auf: 'Kanister',
           Nettofüllmenge_od_Mengenangabe_2: '6.009 Kanister',
         })
-      ).toThrowError('Kanister needs to be a whole number.');
+      ).toThrowError('Kanister needs to be a whole-number');
     });
 
     test('should use a whole-number bulk size if unit is "Riegel"', () => {
@@ -1047,7 +1053,7 @@ describe('splitBulk', () => {
           Kondition_auf: 'Riegel',
           Nettofüllmenge_od_Mengenangabe_2: '6.000 Riegel',
         })
-      ).toMatchObject({ Einheit: 'Riegel', Gebindegröße: 6 });
+      ).toMatchObject({ Einheit: '1 Riegel', Gebindegröße: 6 });
     });
 
     test('should throw if "Riegel" is not a whole number', () => {
@@ -1057,7 +1063,7 @@ describe('splitBulk', () => {
           Kondition_auf: 'Riegel',
           Nettofüllmenge_od_Mengenangabe_2: '6.009 Riegel',
         })
-      ).toThrowError('Riegel needs to be a whole number.');
+      ).toThrowError('Riegel needs to be a whole-number');
     });
 
     test('should use a whole-number bulk size if unit is "Tafel"', () => {
@@ -1067,7 +1073,7 @@ describe('splitBulk', () => {
           Kondition_auf: 'Tafel',
           Nettofüllmenge_od_Mengenangabe_2: '6.000 Tafel',
         })
-      ).toMatchObject({ Einheit: 'Tafel', Gebindegröße: 6 });
+      ).toMatchObject({ Einheit: '1 Tafel', Gebindegröße: 6 });
     });
 
     test('should throw if "Tafel" is not a whole number', () => {
@@ -1077,7 +1083,7 @@ describe('splitBulk', () => {
           Kondition_auf: 'Tafel',
           Nettofüllmenge_od_Mengenangabe_2: '6.009 Tafel',
         })
-      ).toThrowError('Tafel needs to be a whole number.');
+      ).toThrowError('Tafel needs to be a whole-number');
     });
 
     test('should use a whole-number bulk size if unit is "EloPak"', () => {
@@ -1087,7 +1093,7 @@ describe('splitBulk', () => {
           Kondition_auf: 'EloPak',
           Nettofüllmenge_od_Mengenangabe_2: '6.000 EloPak',
         })
-      ).toMatchObject({ Einheit: 'EloPak', Gebindegröße: 6 });
+      ).toMatchObject({ Einheit: '1 EloPak', Gebindegröße: 6 });
     });
 
     test('should throw if "EloPak" is not a whole number', () => {
@@ -1097,7 +1103,7 @@ describe('splitBulk', () => {
           Kondition_auf: 'EloPak',
           Nettofüllmenge_od_Mengenangabe_2: '6.009 EloPak',
         })
-      ).toThrowError('EloPak needs to be a whole number.');
+      ).toThrowError('EloPak needs to be a whole-number');
     });
   });
 
@@ -1129,7 +1135,7 @@ describe('splitBulk', () => {
           Kondition_auf: 'Karton',
           Nettofüllmenge_oder_Mengenangabe: '6.009 Karton',
         })
-      ).toThrowError('Karton needs to be a whole number.');
+      ).toThrowError('Karton needs to be a whole-number...');
     });
   });
 
