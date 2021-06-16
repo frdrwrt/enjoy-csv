@@ -209,15 +209,16 @@ describe('price', () => {
     });
   });
 
-  describe.skip('unit is L', () => {
+  describe('unit is L', () => {
     test('should calculate the price for 12*1L soja drink correctly', () => {
-      const res = bode({
-        ...fakeData,
-        Listenpreis: 1.39,
-        Nettofüllmenge_od_Mengenangabe_2: '12.000 Liter',
-      });
-      console.log(res);
-      expect(res).toMatchObject({ Nettopreis: 1.36 });
+      expect(
+        bode({
+          ...fakeData,
+          Listenpreis: 1.39,
+          Kondition_auf: 'Liter',
+          Nettofüllmenge_od_Mengenangabe_2: '12.000 Liter',
+        })
+      ).toMatchObject({ Nettopreis: 1.36 });
     });
 
     test('should calculate the price for 10*0.5L whatever correctly', () => {
@@ -225,6 +226,7 @@ describe('price', () => {
         bode({
           ...fakeData,
           Listenpreis: 5.0,
+          Kondition_auf: 'Liter',
           Nettofüllmenge_od_Mengenangabe_2: '5.000 Liter',
         })
       ).toMatchObject({ Nettopreis: 2.45 });
