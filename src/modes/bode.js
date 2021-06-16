@@ -80,9 +80,14 @@ function splitBulk({
     ].includes(unit)
   ) {
     if (netto % 1 !== 0) {
-      throw new Error(`${unit} needs to be a whole-number`);
+      if (unit !== 'Beutel') {
+        throw new Error(`${unit} needs to be a whole-number`);
+      } else if (netto >= 1) {
+        throw new Error(
+          `Edge case found: For unit "Beutel" we expect whole numbers if bulk size is more than 1 but was ${netto} .`
+        );
+      }
     }
-
     sizeString = `1 ${unit}`;
     size = 1;
   }
@@ -96,7 +101,7 @@ function splitBulk({
   const exactNetPrice = (Listenpreis - Listenpreis * DISCOUNT) * size;
   return {
     Einheit: sizeString,
-    Gebindegröße: Math.floor(netto / size),
+    Gebindegröße: netto < 1 && unit === 'Beutel' ? 1 : Math.floor(netto / size),
     Nettopreis: Math.round(exactNetPrice * 100) / 100,
     exactNetPrice,
   };

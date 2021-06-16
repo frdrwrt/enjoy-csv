@@ -941,14 +941,36 @@ describe('splitBulk', () => {
       ).toMatchObject({ Einheit: '1 Beutel', Gebindegröße: 5 });
     });
 
-    test('should throw if "Beutel" is not a whole number', () => {
+    test('should use other information if necessary', () => {
+      expect(
+        bode({
+          ...fakeData,
+          Kondition_auf: 'Beutel',
+          Nettofüllmenge_od_Mengenangabe_2: '0.089 Beutel',
+        })
+      ).toMatchObject({ Einheit: '1 Beutel', Gebindegröße: 1 });
+    });
+
+    test('should use at least 1 "Beutel"', () => {
+      expect(
+        bode({
+          ...fakeData,
+          Kondition_auf: 'Beutel',
+          Nettofüllmenge_od_Mengenangabe_2: '0.000 Beutel',
+        })
+      ).toMatchObject({ Einheit: '1 Beutel', Gebindegröße: 1 });
+    });
+
+    test('should throw if "Beutel" is not a whole number and bulk size more than 1', () => {
       expect(() =>
         bode({
           ...fakeData,
           Kondition_auf: 'Beutel',
           Nettofüllmenge_od_Mengenangabe_2: '6.300 Beutel',
         })
-      ).toThrowError('Beutel needs to be a whole-number');
+      ).toThrowError(
+        `Edge case found: For unit "Beutel" we expect whole numbers if bulk size is more than 1 but was 6.3 .`
+      );
     });
 
     test('should use a whole-number bulk size if unit is "Glas"', () => {
