@@ -1107,17 +1107,8 @@ describe('splitBulk', () => {
     });
   });
 
-  describe.skip('unit is "Karton"', () => {
-    test('should use a whole-number bulk size if unit is "Karton"', () => {
-      expect(
-        bode({
-          ...fakeData,
-          Kondition_auf: 'Karton',
-          Nettofüllmenge_od_Mengenangabe_2: '1.925 Karton',
-          Nettofüllmenge_oder_Mengenangabe: '1.000 Karton',
-        })
-      ).toMatchObject({ Einheit: 'Karton', Gebindegröße: 1 });
-
+  describe('unit is "Karton"', () => {
+    test('should use a 1 as bulk size if unit is "1 Karton"', () => {
       expect(
         bode({
           ...fakeData,
@@ -1125,7 +1116,7 @@ describe('splitBulk', () => {
           Nettofüllmenge_od_Mengenangabe_2: '2.575 Karton',
           Nettofüllmenge_oder_Mengenangabe: '1.000 Karton',
         })
-      ).toMatchObject({ Einheit: 'Karton', Gebindegröße: 1 });
+      ).toMatchObject({ Einheit: '1 Karton', Gebindegröße: 1 });
     });
 
     test('should throw if "Karton" is not a whole number', () => {
@@ -1135,7 +1126,7 @@ describe('splitBulk', () => {
           Kondition_auf: 'Karton',
           Nettofüllmenge_oder_Mengenangabe: '6.009 Karton',
         })
-      ).toThrowError('Karton needs to be a whole-number...');
+      ).toThrowError('Karton needs to be a whole-number');
     });
   });
 

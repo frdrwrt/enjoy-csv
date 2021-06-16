@@ -2,10 +2,15 @@ const DISCOUNT = 0.02;
 
 function splitBulk({
   Kondition_auf: unit,
+  Nettofüllmenge_oder_Mengenangabe,
   Nettofüllmenge_od_Mengenangabe_2,
   Listenpreis,
 }) {
-  const netto = parseFloat(Nettofüllmenge_od_Mengenangabe_2);
+  const netto = parseFloat(
+    unit === 'Karton'
+      ? Nettofüllmenge_oder_Mengenangabe
+      : Nettofüllmenge_od_Mengenangabe_2
+  );
   let sizeString;
   let size;
 
@@ -70,6 +75,7 @@ function splitBulk({
       'Riegel',
       'EloPak',
       'Beutel',
+      'Karton',
     ].includes(unit)
   ) {
     if (netto % 1 !== 0) {
@@ -168,6 +174,7 @@ export default function bode(
     Untergruppe,
     Kondition_auf,
     Kolli_Artikel,
+    Nettofüllmenge_oder_Mengenangabe,
     Nettofüllmenge_od_Mengenangabe_2,
     Ursprünge,
     Listenpreis,
@@ -177,6 +184,7 @@ export default function bode(
 ) {
   const { Einheit, Gebindegröße, Nettopreis, exactNetPrice } = splitBulk({
     Kondition_auf,
+    Nettofüllmenge_oder_Mengenangabe,
     Nettofüllmenge_od_Mengenangabe_2,
     Listenpreis,
   });
