@@ -121,6 +121,25 @@ describe('name', () => {
     });
   });
 
+  test('should add identifier to second identical name with length greater than 60', () => {
+    bode({
+      ...fakeData,
+      Artikelname:
+        'Langkornreis Vollkorn bio und all das sollte noch mit zählen   aber das hier nicht mehr',
+    });
+    expect(
+      bode({
+        ...fakeData,
+        Artikelnr: 2,
+        Artikelname:
+          'Langkornreis Vollkorn bio und all das sollte noch mit zählen   aber das hier nicht mehr',
+        Nettofüllmenge_od_Mengenangabe_2: '25.000 kg',
+      })
+    ).toMatchObject({
+      Name: 'Langkornreis Vollkorn bio und all das sollte noch m25.000 kg',
+    });
+  });
+
   test('should throw if article number and name are not unique', () => {
     bode({ ...fakeData, Artikelnr: 1, Artikelname: 'Langkornreis' });
     expect(() =>

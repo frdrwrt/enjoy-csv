@@ -142,6 +142,11 @@ function rename({
     name = Artikelname.substring(0, 60 - bulk.length) + bulk;
   } else {
     name = Artikelname.substring(0, 60);
+    if (Artikelname.length > 60 && Object.values(uniqueNrName).includes(name)) {
+      name =
+        Artikelname.substring(0, 60 - Nettofüllmenge_od_Mengenangabe_2.length) +
+        Nettofüllmenge_od_Mengenangabe_2;
+    }
   }
 
   if (
