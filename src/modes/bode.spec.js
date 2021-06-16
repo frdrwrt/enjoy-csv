@@ -928,7 +928,7 @@ describe('splitBulk', () => {
           Kondition_auf: 'Packung',
           Nettofüllmenge_od_Mengenangabe_2: '15.300 Packung',
         })
-      ).toThrowError('Packung needs to be a whole-number');
+      ).toThrowError('Packung needs to be a whole-number but was 15.3 .');
     });
 
     test('should use a whole-number bulk size if unit is "Beutel"', () => {
@@ -990,7 +990,7 @@ describe('splitBulk', () => {
           Kondition_auf: 'Glas',
           Nettofüllmenge_od_Mengenangabe_2: '6.050 Glas',
         })
-      ).toThrowError('Glas needs to be a whole-number');
+      ).toThrowError('Glas needs to be a whole-number but was 6.05 .');
     });
 
     test('should use a whole-number bulk size if unit is "Stück"', () => {
@@ -1010,7 +1010,7 @@ describe('splitBulk', () => {
           Kondition_auf: 'Stück',
           Nettofüllmenge_od_Mengenangabe_2: '6.009 Stück',
         })
-      ).toThrowError('Stück needs to be a whole-number');
+      ).toThrowError('Stück needs to be a whole-number but was 6.009 .');
     });
 
     test('should use a whole-number bulk size if unit is "Flasche"', () => {
@@ -1030,7 +1030,7 @@ describe('splitBulk', () => {
           Kondition_auf: 'Flasche',
           Nettofüllmenge_od_Mengenangabe_2: '6.009 Flasche',
         })
-      ).toThrowError('Flasche needs to be a whole-number');
+      ).toThrowError('Flasche needs to be a whole-number but was 6.009 .');
     });
 
     test('should use a whole-number bulk size if unit is "Becher"', () => {
@@ -1050,7 +1050,7 @@ describe('splitBulk', () => {
           Kondition_auf: 'Becher',
           Nettofüllmenge_od_Mengenangabe_2: '6.009 Becher',
         })
-      ).toThrowError('Becher needs to be a whole-number');
+      ).toThrowError('Becher needs to be a whole-number but was 6.009 .');
     });
 
     test('should use a whole-number bulk size if unit is "Dose"', () => {
@@ -1070,7 +1070,7 @@ describe('splitBulk', () => {
           Kondition_auf: 'Dose',
           Nettofüllmenge_od_Mengenangabe_2: '6.009 Dose',
         })
-      ).toThrowError('Dose needs to be a whole-number');
+      ).toThrowError('Dose needs to be a whole-number but was 6.009 .');
     });
 
     test('should use a whole-number bulk size if unit is "Kanister"', () => {
@@ -1090,7 +1090,7 @@ describe('splitBulk', () => {
           Kondition_auf: 'Kanister',
           Nettofüllmenge_od_Mengenangabe_2: '6.009 Kanister',
         })
-      ).toThrowError('Kanister needs to be a whole-number');
+      ).toThrowError('Kanister needs to be a whole-number but was 6.009 .');
     });
 
     test('should use a whole-number bulk size if unit is "Riegel"', () => {
@@ -1110,7 +1110,7 @@ describe('splitBulk', () => {
           Kondition_auf: 'Riegel',
           Nettofüllmenge_od_Mengenangabe_2: '6.009 Riegel',
         })
-      ).toThrowError('Riegel needs to be a whole-number');
+      ).toThrowError('Riegel needs to be a whole-number but was 6.009 .');
     });
 
     test('should use a whole-number bulk size if unit is "Tafel"', () => {
@@ -1130,7 +1130,7 @@ describe('splitBulk', () => {
           Kondition_auf: 'Tafel',
           Nettofüllmenge_od_Mengenangabe_2: '6.009 Tafel',
         })
-      ).toThrowError('Tafel needs to be a whole-number');
+      ).toThrowError('Tafel needs to be a whole-number but was 6.009 .');
     });
 
     test('should use a whole-number bulk size if unit is "EloPak"', () => {
@@ -1150,7 +1150,7 @@ describe('splitBulk', () => {
           Kondition_auf: 'EloPak',
           Nettofüllmenge_od_Mengenangabe_2: '6.009 EloPak',
         })
-      ).toThrowError('EloPak needs to be a whole-number');
+      ).toThrowError('EloPak needs to be a whole-number but was 6.009 .');
     });
   });
 
@@ -1173,7 +1173,7 @@ describe('splitBulk', () => {
           Kondition_auf: 'Karton',
           Nettofüllmenge_oder_Mengenangabe: '6.009 Karton',
         })
-      ).toThrowError('Karton needs to be a whole-number');
+      ).toThrowError('Karton needs to be a whole-number but was 6.009 .');
     });
   });
 

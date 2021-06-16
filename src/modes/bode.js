@@ -81,7 +81,9 @@ function splitBulk({
   ) {
     if (netto % 1 !== 0) {
       if (unit !== 'Beutel') {
-        throw new Error(`${unit} needs to be a whole-number`);
+        throw new Error(
+          `${unit} needs to be a whole-number but was ${netto} .`
+        );
       } else if (netto >= 1) {
         throw new Error(
           `Edge case found: For unit "Beutel" we expect whole numbers if bulk size is more than 1 but was ${netto} .`
