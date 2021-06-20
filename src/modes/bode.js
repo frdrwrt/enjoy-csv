@@ -100,7 +100,11 @@ function splitBulk({
     );
   }
 
-  const exactNetPrice = (Listenpreis - Listenpreis * DISCOUNT) * size;
+  const price =
+    typeof Listenpreis === 'string'
+      ? parseFloat(Listenpreis.replace(',', '.'))
+      : parseFloat(Listenpreis);
+  const exactNetPrice = (price - price * DISCOUNT) * size;
   return {
     Einheit: sizeString,
     Gebindegröße: netto < 1 && unit === 'Beutel' ? 1 : Math.floor(netto / size),
@@ -109,22 +113,29 @@ function splitBulk({
   };
 }
 
-function category(Untergruppe, Produktgruppe) {
+const uniqueCategories = [];
+function determineCategory(Untergruppe, Produktgruppe) {
   if (!Untergruppe && !Produktgruppe) {
     throw new Error(
       'Kategorie could not be determined, because Untergruppe and Produktgruppe is undefined'
     );
   }
-  return Untergruppe?.trim() ? Untergruppe?.trim() : Produktgruppe?.trim();
+  const category = Untergruppe?.trim()
+    ? Untergruppe?.trim()
+    : Produktgruppe?.trim();
+  if (!uniqueCategories.includes(category)) {
+    uniqueCategories.push(category);
+  }
+  return category;
 }
 
 function tax(Mwst) {
   const mwst = Mwst?.trim()?.toLowerCase();
   if (mwst === 'voller mwst-satz') {
-    return '19.00%';
+    return 19;
   }
   if (mwst === 'halber mwst-satz') {
-    return '7.00%';
+    return 7;
   }
   throw new Error(`Tax could not be determined (${mwst})`);
 }
@@ -198,6 +209,10 @@ export function resetNameMemory() {
   uniqueNrName = {};
 }
 
+export function getUniqueCategories() {
+  return uniqueCategories;
+}
+
 export default function bode(
   {
     Artikelnr,
@@ -250,6 +265,6 @@ export default function bode(
     Produzent: Marke,
     Mwst: tax(MwSt_Deutschland),
     Herkunft: Ursprünge,
-    Kategorie: category(Untergruppe, Produktgruppe),
+    Kategorie: determineCategory(Untergruppe, Produktgruppe),
   };
 }

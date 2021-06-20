@@ -29,7 +29,7 @@ describe('bode naturkost', () => {
       Herkunft: 'Deutschland',
       Einheit: '1 Glas',
       Nettopreis: 1.81,
-      Mwst: '7.00%',
+      Mwst: 7,
       Gebindegröße: 6,
       Kategorie: 'Aufstriche würzig',
     });
@@ -303,7 +303,7 @@ describe('identify tax', () => {
     expect(
       bode({ ...fakeData, MwSt_Deutschland: 'Voller MWSt-Satz' })
     ).toMatchObject({
-      Mwst: '19.00%',
+      Mwst: 19,
     });
   });
 
@@ -311,7 +311,7 @@ describe('identify tax', () => {
     expect(
       bode({ ...fakeData, MwSt_Deutschland: 'Halber MWSt-Satz' })
     ).toMatchObject({
-      Mwst: '7.00%',
+      Mwst: 7,
     });
   });
 
@@ -319,7 +319,7 @@ describe('identify tax', () => {
     expect(
       bode({ ...fakeData, MwSt_Deutschland: 'Voller Mwst-satz' })
     ).toMatchObject({
-      Mwst: '19.00%',
+      Mwst: 19,
     });
   });
 
@@ -327,7 +327,7 @@ describe('identify tax', () => {
     expect(
       bode({ ...fakeData, MwSt_Deutschland: 'halber Mwst-sAtz' })
     ).toMatchObject({
-      Mwst: '7.00%',
+      Mwst: 7,
     });
   });
 

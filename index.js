@@ -7,7 +7,11 @@ import {
 } from './src/libs/cli.js';
 import { processCsv } from './src/libs/csv.js';
 import { foodsoftHeaders } from './src/libs/foodsoft.js';
-import bode from './src/modes/bode.js';
+import bode, {
+  resetNameMemory,
+  getUniqueCategories,
+} from './src/modes/bode.js';
+
 import demo from './src/modes/demo.js';
 
 async function enjoy(args) {
@@ -21,13 +25,14 @@ async function enjoy(args) {
       break;
     case 'bode':
       await processCsv(args, bode, { outputHeaders: foodsoftHeaders });
+      resetNameMemory();
+      console.log(getUniqueCategories());
       break;
     default:
       somethingWentWrong(`
 Mode ${args.mode} is not available!
 Available modes: demo`);
   }
-
   console.log(`✅ Done!`);
 }
 
