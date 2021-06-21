@@ -1,0 +1,16 @@
+export const foodsoftHeaders = [
+  'Status',
+  'Bestellnummer',
+  'Name',
+  'Notiz',
+  'Produzent',
+  'Herkunft',
+  'Einheit',
+  'Nettopreis',
+  'Mwst',
+  'Pfand',
+  'Gebindegröße',
+  'geschützt',
+  'geschützt',
+  'Kategorie',
+];

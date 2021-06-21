@@ -1,6 +1,6 @@
 import { createReadStream, createWriteStream } from 'fs';
-import { parseFile, format } from 'fast-csv';
-import { pipeline } from './utils.js';
+import csv from 'fast-csv';
+import utils from './utils.js';
 
 export async function sniffCsvDelimiter(file) {
   const readstream = createReadStream(file, { encoding: 'utf-8' });
@@ -26,18 +26,25 @@ Trying to read it with ; as delimiter.`);
 
 export async function processCsv(
   { inputFilePath, outputFilePath },
-  transformation
+  transformation,
+  { outputHeaders = true } = {}
 ) {
   const delimiter = await sniffCsvDelimiter(inputFilePath);
+  let idx = 1;
 
-  await pipeline(
-    parseFile(inputFilePath, { headers: true, delimiter }),
+  await utils.pipeline(
+    csv.parseFile(inputFilePath, { headers: true, delimiter }),
     async function* applyTransformation(asyncIterable) {
       for await (const row of asyncIterable) {
-        yield transformation(row);
+        idx += 1;
+        try {
+          yield transformation(row);
+        } catch (error) {
+          utils.skipRow(idx, error);
+        }
       }
     },
-    format({ headers: true, delimiter }),
+    csv.format({ headers: outputHeaders, delimiter }),
     createWriteStream(outputFilePath)
   );
 }
@@ -49,8 +56,8 @@ export async function processCsv(
 export async function readCsv(filePath) {
   const data = [];
   const delimiter = await sniffCsvDelimiter(filePath);
-  await pipeline(
-    parseFile(filePath, { headers: true, delimiter }),
+  await utils.pipeline(
+    csv.parseFile(filePath, { headers: true, delimiter }),
     async function* collectRows(asyncIterable) {
       for await (const row of asyncIterable) {
         data.push(row);

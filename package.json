@@ -17,13 +17,13 @@
   },
   "lint-staged": {
     "**/*.js": [
-      "yarn test",
+      "yarn test --passWithNoTests",
       "yarn lint",
-      "yarn format",
-      "git add"
+      "yarn format"
     ]
   },
   "dependencies": {
+    "@jest/globals": "^27.0.3",
     "chalk": "^4.1.1",
     "clear": "^0.1.0",
     "fast-csv": "^4.3.6",

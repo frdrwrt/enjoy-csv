@@ -35,4 +35,4 @@ Checkout `demo.csv`. In the demo usecase we want to rename the column `descripti
 ```
 yarn test
 ```
-
+6) Please ensure git hooks are running before commit to ensure code style, formatting and tests!
